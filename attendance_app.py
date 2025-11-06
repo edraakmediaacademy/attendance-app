@@ -9,8 +9,12 @@ from io import BytesIO
 with open("static/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# خلفية الموجة
-st.markdown("<div class='wave-bg'></div>", unsafe_allow_html=True)
+
+# خلفية الموجة (في الأعلى فقط)
+st.markdown("""
+    <div class='wave-bg'></div>
+    <div style='height:120px'></div>
+""", unsafe_allow_html=True)
 
 
 # -------------------- إعداد الصفحة --------------------
