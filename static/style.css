@@ -3,44 +3,87 @@
    Author: Ashraf Salem
    Responsive, Elegant, and Safe for Streamlit
    ========================================================================== */
+/* ---------- Google Font: Tajawal ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
 
-/* ---------- RTL Global Settings ---------- */
+/* ---------- RTL & Font Settings ---------- */
 html, body, [data-testid="stAppViewContainer"] {
   direction: rtl;
   text-align: right;
-  font-family: "Cairo", "Tahoma", sans-serif !important;
+  font-family: 'Tajawal', sans-serif !important;
+  letter-spacing: 0.2px;
+  background: linear-gradient(
+    to bottom,
+    #e8f8ff 0%,   /* soft sky blue */
+    #fff5dc 60%,  /* warm cream */
+    #ffd59e 100%  /* orange-peach gradient end */
+  );
+  padding-bottom: 80px;
 }
 
-/* إعادة ترتيب الحقول والنصوص */
+/* ---------- Typography ---------- */
+h1, h2 {
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 700 !important; /* Bold titles */
+  color: #222;
+  text-align: center;
+}
+
+h3, h4, h5, h6 {
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 500;
+  color: #333;
+}
+
+p, span, div, label, small {
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 300; /* Light body text */
+  color: #444;
+  text-align: right;
+  direction: rtl;
+  line-height: 1.6;
+}
+
+/* ---------- Form Fields ---------- */
 .stTextInput label, .stTextInput input, .stTextInput textarea {
   text-align: right !important;
   direction: rtl !important;
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 400;
 }
 
-/* الأزرار */
+/* ---------- Buttons ---------- */
 button, .stButton>button {
   direction: rtl !important;
   text-align: center !important;
-  font-family: "Cairo", sans-serif !important;
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 10px 0;
+  background: linear-gradient(90deg, #ff9966, #ff5e62);
+  color: white !important;
+  border: none;
+  transition: all 0.2s ease-in-out;
 }
 
-/* العناوين والنصوص العامة */
-h1, h2, h3, h4, h5, h6, p, span, div {
-  direction: rtl;
-  text-align: right;
+button:hover, .stButton>button:hover {
+  background: linear-gradient(90deg, #ff5e62, #ff9966);
+  transform: scale(1.03);
 }
 
-/* عناصر Streamlit الأخرى */
-[data-testid="stMarkdownContainer"] {
-  direction: rtl;
-  text-align: right;
-}
-
-/* لضبط الحقول في الموبايل */
+/* ---------- Inputs on mobile ---------- */
 .stTextInput>div>div>input {
   padding-right: 12px !important;
   padding-left: 0 !important;
 }
+
+/* ---------- Centered Logo ---------- */
+.logo {
+  width: 110px;
+  display: block;
+  margin: 20px auto 10px auto;
+}
+
 
 
 /* ---------- Root Theme Variables ---------- */

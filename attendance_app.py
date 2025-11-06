@@ -45,7 +45,7 @@ else:
     st.warning("`static/logo.svg` not found. Running without logo.")
 
 # -------- عنوان ووصف --------
-st.markdown("<h1 style='text-align:center;'>📝 نموذج حضور – تسجيل البيانات</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'> نموذج حضور – تسجيل البيانات</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;color:#555;'>املأ البيانات التالية. النموذج متجاوب ويعمل باللمس على الأجهزة المحمولة.</p>", unsafe_allow_html=True)
 
 # -------- ملف البيانات --------
@@ -78,7 +78,7 @@ with st.container():
     email = st.text_input("الإيميل", placeholder="example@email.com")
 
 # -------- زر التسجيل --------
-if st.button("سجّل الحضور ✅", use_container_width=True):
+if st.button("سجّل الحضور ", use_container_width=True):
     if not name.strip() or not phone.strip() or not email.strip():
         st.warning("الرجاء إدخال جميع البيانات قبل التسجيل.")
     elif not validate_phone(phone):
@@ -102,7 +102,7 @@ if st.button("سجّل الحضور ✅", use_container_width=True):
             }
             df_new = pd.concat([df_old, pd.DataFrame([new_row])], ignore_index=True)
             df_new.to_excel(DATA_FILE, index=False)
-            st.success("تم تسجيل حضورك بنجاح 🎉")
+            st.success("تم تسجيل حضورك بنجاح")
         except Exception as e:
             st.error(f"حدث خطأ أثناء حفظ البيانات: {e}")
 
@@ -111,7 +111,7 @@ if DATA_FILE.exists():
     try:
         with open(DATA_FILE, "rb") as fh:
             st.download_button(
-                "⬇️ تحميل قاعدة البيانات",
+                "تحميل قاعدة البيانات",
                 data=fh,
                 file_name="attendance.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
