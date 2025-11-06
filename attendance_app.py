@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+
 # -------- إعداد الصفحة --------
 st.set_page_config(page_title="Attendance App", page_icon="📝", layout="centered")
 
@@ -41,8 +42,12 @@ if not DATA_FILE.exists():
     pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"]).to_excel(DATA_FILE, index=False)
 
 # -------- دوال التحقق --------
-phone_re = re.compile(r"^\+?\d{7,15}$")
-email_re = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+try:
+    phone_re = re.compile(r"^\+?\d{7,15}$")
+    email_re = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+except Exception as e:
+    st.error(f"Regex error: {e}")
+
 
 def validate_phone(x: str) -> bool:
     return bool(phone_re.match(x.strip()))
