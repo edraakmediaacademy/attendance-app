@@ -4,16 +4,29 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+# --- Configuration ---
+APP_ROOT = Path(__file__).parent # Get the root directory of the app
+STATIC_DIR = APP_ROOT / "static"
+DATA_DIR = APP_ROOT / "data"
+DATA_FILE = DATA_DIR / "attendance.xlsx"
+
+# Ensure directories exist
+STATIC_DIR.mkdir(exist_ok=True)
+DATA_DIR.mkdir(exist_ok=True)
 
 # -------- إعداد الصفحة --------
 st.set_page_config(page_title="Attendance App", page_icon="📝", layout="centered")
 
 # -------- تحميل CSS --------
 try:
-    with open("static/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-except Exception:
-    pass  # لو مفيش CSS، كمل عادي
+    css_file = STATIC_DIR / "style.css"
+    if css_file.exists():
+        with open(css_file) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    else:
+        st.warning("`static/style.css` not found. Running without custom styles.")
+except Exception as e:
+    st.error(f"Error loading CSS: {e}")
 
 # -------- خلفية موجية + مسافة فوق المحتوى --------
 st.markdown("""
@@ -22,22 +35,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -------- الشعار (Inline SVG لضمان الظهور على Streamlit Cloud) --------
-logo_path = Path("static/logo.svg")
+logo_path = STATIC_DIR / "logo.svg"
 if logo_path.exists():
     try:
         svg = logo_path.read_text(encoding="utf-8")
         st.markdown(f"<div style='text-align:center;margin-bottom:10px'>{svg}</div>", unsafe_allow_html=True)
-    except Exception:
-        pass
+    except Exception as e:
+        st.error(f"Error loading logo SVG: {e}")
+else:
+    st.warning("`static/logo.svg` not found. Running without logo.")
+
 
 # -------- عنوان ووصف --------
 st.title("📝 نموذج حضور – تسجيل البيانات")
 st.write("املأ البيانات التالية. النموذج متجاوب ويعمل باللمس على الأجهزة المحمولة.")
 
 # -------- ملف البيانات --------
-DATA_FILE = Path("data/attendance.xlsx")
-DATA_FILE.parent.mkdir(exist_ok=True)
-
 if not DATA_FILE.exists():
     pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"]).to_excel(DATA_FILE, index=False)
 
@@ -46,14 +59,22 @@ try:
     phone_re = re.compile(r"^\+?\d{7,15}$")
     email_re = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 except Exception as e:
-    st.error(f"Regex error: {e}")
+    st.error(f"Regex compilation error: {e}")
+    # Fallback to simple validation or exit
+    phone_re = None
+    email_re = None
 
 
 def validate_phone(x: str) -> bool:
-    return bool(phone_re.match(x.strip()))
+    if phone_re:
+        return bool(phone_re.match(x.strip()))
+    return len(x.strip()) > 5 # Basic check if regex failed
 
 def validate_email(x: str) -> bool:
-    return bool(email_re.match(x.strip()))
+    if email_re:
+        return bool(email_re.match(x.strip()))
+    return "@" in x.strip() and "." in x.strip() # Basic check if regex failed
+
 
 # -------- الحقول --------
 name  = st.text_input("الاسم الكامل", placeholder="اكتب اسمك هنا")
@@ -70,30 +91,41 @@ if st.button("سجّل الحضور ✅", use_container_width=True):
         st.warning("صيغة البريد الإلكتروني غير صحيحة.")
     else:
         try:
-            df_old = pd.read_excel(DATA_FILE)
-        except Exception:
-            df_old = pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"])
+            # Load existing data, handling potential empty/corrupted files gracefully
+            try:
+                df_old = pd.read_excel(DATA_FILE)
+                if df_old.empty: # If file exists but is empty
+                    df_old = pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"])
+            except Exception: # If file is corrupted or unreadable
+                df_old = pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"])
 
-        new_row = {
-            "الاسم الكامل": name.strip(),
-            "التليفون": phone.strip(),
-            "الإيميل": email.strip(),
-            "الوقت": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        }
-        df_new = pd.concat([df_old, pd.DataFrame([new_row])], ignore_index=True)
-        df_new.to_excel(DATA_FILE, index=False)
-        st.success("تم تسجيل حضورك بنجاح 🎉")
+
+            new_row = {
+                "الاسم الكامل": name.strip(),
+                "التليفون": phone.strip(),
+                "الإيميل": email.strip(),
+                "الوقت": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            df_new = pd.concat([df_old, pd.DataFrame([new_row])], ignore_index=True)
+            df_new.to_excel(DATA_FILE, index=False)
+            st.success("تم تسجيل حضورك بنجاح 🎉")
+        except Exception as e:
+            st.error(f"حدث خطأ أثناء حفظ البيانات: {e}")
 
 # -------- تنزيل قاعدة البيانات --------
 if DATA_FILE.exists():
-    with open(DATA_FILE, "rb") as fh:
-        st.download_button(
-            "⬇️ تحميل قاعدة البيانات",
-            data=fh,
-            file_name="attendance.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
-        )
+    try:
+        with open(DATA_FILE, "rb") as fh:
+            st.download_button(
+                "⬇️ تحميل قاعدة البيانات",
+                data=fh,
+                file_name="attendance.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
+    except Exception as e:
+        st.error(f"حدث خطأ أثناء تحضير ملف التنزيل: {e}")
+
 
 # -------- فاصل وملاحظات --------
 st.markdown("---")
