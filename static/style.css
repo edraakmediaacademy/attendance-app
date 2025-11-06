@@ -1,4 +1,3 @@
-
 /* ==== الخلفية العامة مع موجة ==== */
 body {
     background-color: #fff9f1;
@@ -26,23 +25,38 @@ body {
 
 
 /* ==== شعار علوي ==== */
-img[src$="logo.svg"] {
-    margin-top: 40px;
-    margin-bottom: 10px;
+/* This targets the actual image if it's rendered by Streamlit */
+/* If you embed SVG directly, this might not apply, but your logo.svg is within a div */
+img {
     filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.1));
 }
 
+/* Target the div that contains your logo, assuming it's centered as in your Python code */
+div[data-testid="stMarkdown"] div[style*="text-align:center"] img {
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
 
-/* ==== الصندوق الرئيسي ==== */
-main {
+
+/* ==== الصندوق الرئيسي: استهدف الحاوية الفعلية لمحتوى Streamlit ==== */
+/* This targets the primary content block in Streamlit */
+.block-container {
     background-color: #ffffff;
     border-radius: 20px;
     box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.08);
     padding: 3rem 2.5rem;
     width: 90%;
     max-width: 480px;
-    margin: 3rem auto;
+    margin: 3rem auto; /* This 'auto' margin centers it */
+    z-index: 1; /* Ensure it's above the wave background */
+    position: relative; /* Needed for z-index to work against fixed elements */
 }
+
+/* Override Streamlit's default padding to control your own margin */
+.css-1dp5x4l.e1g8pov61 { /* This is a common class for the overall app container */
+    padding: 0; /* Remove default padding to let .block-container manage its margin */
+}
+
 
 /* ==== العناوين ==== */
 h1, h2, h3 {
@@ -86,9 +100,14 @@ h1, h2, h3 {
 }
 
 /* ==== الأيقونات ==== */
-.css-1kyxreq, .css-1q8dd3e {
+.css-1kyxreq, .css-1q8dd3e { /* These are generic Streamlit icon classes, might change versions */
     color: #2e3fb4;
     font-size: 20px;
+}
+
+/* Specific target for Streamlit's internal icon for warnings, successes etc. */
+.stAlert .stAlertContent span[data-testid="stMarkdownContainer"] svg {
+    color: #2e3fb4; /* Apply primary color to warning/success icons */
 }
 
 /* ==== نصوص إضافية ==== */
