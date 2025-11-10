@@ -197,3 +197,29 @@ hr {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---------- White Form Container (explicit) ---------- */
+.form-box {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  padding: 45px 35px;
+  margin: 60px auto;
+  max-width: 560px;
+  backdrop-filter: blur(6px);
+  direction: rtl;
+  text-align: right;
+  animation: fadeIn 0.8s ease both;
+  position: relative;
+  z-index: 2;
+}
+
+.form-box h1, .form-box h2, .form-box h3, .form-box label, .form-box p {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* Make Streamlit buttons full width inside columns */
+.stButton > button {
+  width: 100%;
+}
