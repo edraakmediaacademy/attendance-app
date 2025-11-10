@@ -1,19 +1,19 @@
 import streamlit as st
-import pandas as pd
-from pathlib import Path
+import requests
 from datetime import datetime
 
-# --------------------------- Page Config ---------------------------
-# إعدادات الصفحة
+# -----------------------------------------------------
+# إعداد الصفحة العامة
+# -----------------------------------------------------
 st.set_page_config(page_title="نظام تسجيل الحضور", page_icon="📝", layout="centered")
 
-# --------------------------- CSS Loader ----------------------------
-# دالة تحميل ملف الأنماط (CSS)
+# -----------------------------------------------------
+# تحميل CSS (من مجلد static أو من نفس المجلد)
+# -----------------------------------------------------
 def load_css():
-    css_candidates = ["static/style.css", "style.css"]
-    for p in css_candidates:
+    for path in ["static/style.css", "style.css"]:
         try:
-            with open(p, "r", encoding="utf-8") as f:
+            with open(path, "r", encoding="utf-8") as f:
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
                 return
         except FileNotFoundError:
@@ -21,159 +21,90 @@ def load_css():
 
 load_css()
 
-# --------------------------- Data setup ----------------------------
-DATA_FILE = Path("attendance_data.csv")
-# قائمة الأعمدة المحدثة مع حقول الهاتف
-COLUMNS = ["timestamp", "name", "email", "masterclass", "session", "phone_code", "phone_number"]
+# -----------------------------------------------------
+# إعداد الرابط الخاص بـ Google Apps Script
+# -----------------------------------------------------
+# 🔹 غيّر هذا الرابط إلى رابط الـ Web App الخاص بك بعد النشر من Google Apps Script
+GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwhZixCLKXVdp0mKl43_wUDbG4ggFrqE4uk68HhbhClEkZGIcg4m-UDMXFdeu4EWrtGmg/exec"
 
-MASTERCLASSES = [
-    "كيف تتحقق من الأخبار باستخدام الذكاء الاصطناعي - فهمي متولي",
-    "كتابة المحتوى للسوشيال ميديا - أشرف سالم",
-    "كتابة وصياغة الأخبار للسوشيال ميديا - محمد عواد",
-    "تصحيح مفاهيم التسويق الرقمي - يحيى نايل",
-]
-SESSIONS = ["اليوم الأول", "اليوم الثاني", "اليوم الثالث"]
-
-# قائمة أكواد الدول
-COUNTRY_CODES = [
-    "+966 (السعودية)", "+971 (الإمارات)", "+20 (مصر)",
-    "+962 (الأردن)", "+965 (الكويت)", "+974 (قطر)", "+973 (البحرين)",
-    "+961 (لبنان)", "+212 (المغرب)", "+213 (الجزائر)", "+90 (تركيا)"
-]
-
-@st.cache_data(show_spinner=False)
-def load_data() -> pd.DataFrame:
-    """تحميل البيانات من ملف CSV، مع التأكد من وجود كل الأعمدة."""
-    if DATA_FILE.exists():
-        try:
-            df = pd.read_csv(DATA_FILE)
-            # التأكد من وجود كل الأعمدة المطلوبة
-            for col in COLUMNS:
-                if col not in df.columns:
-                    df[col] = ""
-            return df[COLUMNS]
-        except Exception:
-            return pd.DataFrame(columns=COLUMNS)
-    return pd.DataFrame(columns=COLUMNS)
-
-def append_record(record: dict):
-    """إضافة سجل جديد إلى ملف CSV."""
-    df = load_data()
-    df = pd.concat([df, pd.DataFrame([record])], ignore_index=True)
-    df.to_csv(DATA_FILE, index=False)
-    # مسح الـ cache لعرض البيانات الجديدة فوراً
-    load_data.clear()
-
-@st.cache_data(show_spinner=False)
-def get_today_data(df: pd.DataFrame) -> pd.DataFrame:
-    """فلترة البيانات لعرض سجلات اليوم الحالي فقط."""
-    if df.empty:
-        return df
-    try:
-        d = pd.to_datetime(df["timestamp"])
-        today = pd.Timestamp.now().date()
-        return df[d.dt.date == today]
-    except Exception:
-        return df.tail(50)
-
-# --------------------------- Form UI -------------------------------
-
-# وضع الشعار داخل البطاقة البيضاء (باستخدام كلاس CSS الجديد)
-st.markdown(
-    '<div class="form-logo-wrapper"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f0f0f0"/><text x="50%" y="53%" text-anchor="middle" font-size="140" font-family="sans-serif">📝</text></svg></div>',
-    unsafe_allow_html=True
-)
+# -----------------------------------------------------
+# واجهة التسجيل
+# -----------------------------------------------------
+st.markdown('<div class="form-logo-wrapper"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f0f0f0"/><text x="50%" y="53%" text-anchor="middle" font-size="140" font-family="sans-serif">📝</text></svg></div>', unsafe_allow_html=True)
 
 st.header("📋 تسجيل حضور الماستر كلاس")
 
+# بيانات الفورم
 name = st.text_input("الاسم الكامل")
 email = st.text_input("البريد الإلكتروني")
 
-# استخدام عمودين لحقل الهاتف وكود الدولة
-col_phone_code, col_phone_num = st.columns([1, 2], gap="small")
+masterclass = st.selectbox(
+    "اختر الماستر كلاس",
+    [
+        "كيف تتحقق من الأخبار باستخدام الذكاء الاصطناعي - فهمي متولي",
+        "كتابة المحتوى للسوشيال ميديا - أشرف سالم",
+        "كتابة وصياغة الأخبار للسوشيال ميديا - محمد عواد",
+        "تصحيح مفاهيم التسويق الرقمي - يحيى نايل",
+    ]
+)
 
-with col_phone_code:
-    phone_code = st.selectbox("كود الدولة", COUNTRY_CODES, index=0)
-    
-with col_phone_num:
-    phone_number = st.text_input("رقم الهاتف", placeholder="أدخل رقم الهاتف")
+session = st.selectbox("اختر اليوم / الجلسة", ["اليوم الأول", "اليوم الثاني", "اليوم الثالث"])
 
+# -----------------------------------------------------
+# إرسال البيانات إلى Google Sheet
+# -----------------------------------------------------
+def send_to_google_sheet(record: dict):
+    """يرسل البيانات إلى Google Sheet عبر API."""
+    try:
+        response = requests.post(GOOGLE_SHEET_URL, json=record)
+        if response.status_code == 200:
+            st.success(f"✅ تم تسجيل حضورك بنجاح في «{record['masterclass']}».")
+        else:
+            st.error("⚠️ حدث خطأ أثناء الإرسال إلى Google Sheet.")
+    except Exception as e:
+        st.error(f"❌ لم يتمكن التطبيق من الاتصال: {e}")
 
-masterclass = st.selectbox("اختر الماستر كلاس", MASTERCLASSES, index=1)
-session = st.selectbox("اختر اليوم / الجلسة", SESSIONS, index=0)
-
-# استخدام عمودين لأزرار الإرسال والتفريغ
-col_submit, col_clear = st.columns([2,1], gap="small")
+# -----------------------------------------------------
+# أزرار التحكم
+# -----------------------------------------------------
+col_submit, col_clear = st.columns([2, 1], gap="small")
 
 with col_submit:
     submit = st.button("تسجيل الحضور", use_container_width=True)
+
 with col_clear:
     clear = st.button("تفريغ الحقول", use_container_width=True)
 
-# 🛑 التصحيح: استبدال st.experimental_rerun() بـ st.rerun()
 if clear:
-    st.rerun()
+    st.experimental_rerun()
 
+# -----------------------------------------------------
+# عند الضغط على زر التسجيل
+# -----------------------------------------------------
 if submit:
-    # التحقق من المدخلات الأساسية
-    if not name.strip() or not email.strip() or not phone_number.strip():
-        st.warning("⚠️ الرجاء إدخال الاسم والبريد الإلكتروني ورقم الهاتف.")
+    if not name.strip() or not email.strip():
+        st.warning("⚠️ الرجاء إدخال الاسم والبريد الإلكتروني.")
+    elif GOOGLE_SHEET_URL.startswith("https://script.google.com/macros/s/AKfycbxxxxxxxx"):
+        st.warning("⚠️ الرجاء استبدال رابط GOOGLE_SHEET_URL بالرابط الصحيح من Google Apps Script.")
     else:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        rec = {
-            "timestamp": timestamp,
+        record = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "name": name.strip(),
             "email": email.strip(),
             "masterclass": masterclass,
             "session": session,
-            # حفظ الكود (أول جزء قبل المسافة)
-            "phone_code": phone_code.split(' ')[0], 
-            "phone_number": phone_number.strip(),
         }
-        try:
-            append_record(rec)
-            st.success(f"✅ تم تسجيل حضورك بنجاح في «{masterclass}». شكرًا يا {name}!")
-        except Exception as e:
-            st.error(f"حدث خطأ أثناء حفظ البيانات: {e}")
+        send_to_google_sheet(record)
 
-
-# --------------------------- Data Preview & Export -----------------
-st.markdown("### 🗂️ سجلات اليوم (آخر المدخلات)")
-df_all = load_data()
-df_today = get_today_data(df_all)
-
-if df_today.empty:
-    st.info("لا توجد سجلات لليوم حتى الآن.")
-else:
-    # عرض البيانات بترتيب عكسي (الأحدث أولاً)
-    st.dataframe(df_today[::-1], use_container_width=True, hide_index=True)
-
-# أزرار التصدير
-col1, col2 = st.columns(2)
-
-with col1:
-    csv_bytes = df_all.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="⬇️ تنزيل CSV كامل",
-        data=csv_bytes,
-        file_name="attendance_data.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
-
-with col2:
-    try:
-        import io
-        from pandas import ExcelWriter
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-            df_all.to_excel(writer, sheet_name="Attendance", index=False)
-        st.download_button(
-            label="⬇️ تنزيل Excel كامل",
-            data=output.getvalue(),
-            file_name="attendance_data.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-    except Exception as e:
-        st.caption(f"تعذّر إنشاء ملف Excel ({e}). يرجى تنزيل CSV.")
+# -----------------------------------------------------
+# ملاحظة للمستخدم
+# -----------------------------------------------------
+st.markdown(
+    """
+    <div style='text-align:center; margin-top:40px; color:#666; font-size:0.9rem'>
+        يتم حفظ جميع البيانات مباشرة في Google Sheet المربوطة بالتطبيق.<br>
+        تأكد من أن رابط Google Script صالح ومفعل للوصول العام (Anyone).
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
