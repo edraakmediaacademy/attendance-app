@@ -72,12 +72,11 @@ def validate_email(x: str) -> bool:
         return bool(email_re.match(x.strip()))
     return "@" in x.strip() and "." in x.strip()
 
-
-
-# -------- حاوية النموذج --------
-with st.container():
-    st.markdown("<div class='form-container'>", unsafe_allow_html=True)
-
+# -------- حاوية النموذج (using st.container and targeting it with CSS) --------
+# We'll add a custom ID or use a data-testid to target this container in CSS
+with st.container(border=False) as form_container_widget: # Use a key to potentially target it later if needed
+    st.markdown('<div class="st-form-container-wrapper">', unsafe_allow_html=True) # A div to hold the form-container styling
+    
     name  = st.text_input("الاسم الكامل", placeholder="اكتب اسمك هنا")
     phone = st.text_input("التليفون (مثال: +971501234567 أو 0501234567)")
     email = st.text_input("الإيميل", placeholder="example@email.com")
@@ -115,10 +114,8 @@ with st.container():
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True,
             )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
+    st.markdown('</div>', unsafe_allow_html=True) # Close the wrapper
+    
 
 # -------- فاصل وملاحظات --------
 st.markdown("---")

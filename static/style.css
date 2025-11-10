@@ -21,6 +21,17 @@ html, body, [data-testid="stAppViewContainer"] {
   padding-bottom: 80px;
 }
 
+/* Adjust Streamlit's main content area to sit within your layout */
+[data-testid="stAppViewContainer"] > .main {
+    background: transparent; /* Ensure Streamlit's main area doesn't have its own background */
+    padding: 0; /* Remove default padding if desired */
+}
+
+[data-testid="stVerticalBlock"] > div:first-child { /* Target the first block within the main content area for the wave */
+    position: relative;
+    z-index: 1; /* Ensure wave is behind content */
+}
+
 /* ---------- Typography ---------- */
 h1, h2 {
   font-family: 'Tajawal', sans-serif !important;
@@ -44,8 +55,9 @@ p, span, div, label, small {
   line-height: 1.6;
 }
 
-/* ---------- Form Container ---------- */
-.form-container {
+/* ---------- Form Container Wrapper ---------- */
+/* This will now style the wrapper div that *contains* Streamlit components */
+.st-form-container-wrapper {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 18px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -55,10 +67,11 @@ p, span, div, label, small {
   backdrop-filter: blur(6px);
   direction: rtl;
   text-align: right;
+  animation: fadeIn 0.8s ease both; /* Keep animation */
 }
 
 @media (max-width: 600px) {
-  .form-container {
+  .st-form-container-wrapper {
     padding: 25px 20px;
     margin: 20px 10px;
   }
@@ -101,10 +114,17 @@ p, span, div, label, small {
 }
 
 /* ---------- Logo ---------- */
-.logo {
+/* Assuming your logo SVG is already inline, this class might not be used directly on the SVG itself. */
+/* If you need to style the parent div that holds the SVG, target that div's class/id */
+.logo { /* This class is currently not applied to anything in your Python code */
   width: 110px;
   display: block;
   margin: 20px auto 10px auto;
+}
+
+/* Adjust for Streamlit's default margins within its containers */
+.stVerticalBlock > div > div > div {
+    padding: 0px !important; /* Remove default padding in Streamlit blocks if needed */
 }
 
 /* ---------- Responsive Design ---------- */
@@ -127,6 +147,4 @@ p, span, div, label, small {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.form-container {
-  animation: fadeIn 0.8s ease both;
-}
+/* The animation is now on .st-form-container-wrapper */
