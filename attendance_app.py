@@ -43,14 +43,9 @@ else:
     st.warning("`static/logo.svg` not found. Running without logo.")
 
 
-# -------- Primary Content Wrapper (This will be our white box!) --------
-# Use a specific data-testid for the container to apply the form-container styles
-with st.container(border=False):
-    # Streamlit places the widget for st.title and st.write into a vertical block
-    # We need to ensure this block or its parent has the white box styling
-    # A simple approach: use markdown with a class for the main styling
-    st.markdown('<div class="main-form-content">', unsafe_allow_html=True) # THIS IS THE NEW WRAPPER
-
+# -------- Primary Content Block (This is the one we'll style as the white box!) --------
+# All your form elements go directly into this st.container
+with st.container(border=False): # Streamlit will generate a div with data-testid="stVerticalBlock" here
     # -------- عنوان ووصف --------
     st.title("📝 نموذج حضور – تسجيل البيانات")
     st.write("املأ البيانات التالية. النموذج متجاوب ويعمل باللمس على الأجهزة المحمولة.")
@@ -116,9 +111,6 @@ with st.container(border=False):
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True,
             )
-
-    st.markdown('</div>', unsafe_allow_html=True) # Close the main-form-content wrapper
-
 
 # -------- فاصل وملاحظات --------
 st.markdown("---")
