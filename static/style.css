@@ -24,7 +24,7 @@ html, body, [data-testid="stAppViewContainer"] {
 /* ---------- Typography ---------- */
 h1, h2 {
   font-family: 'Tajawal', sans-serif !important;
-  font-weight: 700 !important; /* Bold titles */
+  font-weight: 700 !important;
   color: #222;
   text-align: center;
 }
@@ -37,11 +37,51 @@ h3, h4, h5, h6 {
 
 p, span, div, label, small {
   font-family: 'Tajawal', sans-serif !important;
-  font-weight: 300; /* Light body text */
+  font-weight: 300;
   color: #444;
   text-align: right;
   direction: rtl;
   line-height: 1.6;
+}
+
+/* ---------- Form Container ---------- */
+.form-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  padding: 40px 30px;
+  margin: 40px auto;
+  max-width: 500px;
+  backdrop-filter: blur(6px);
+  direction: rtl;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 25px 20px;
+    margin: 20px 10px;
+  }
+}
+
+/* ---------- Buttons ---------- */
+.stButton > button {
+  direction: rtl !important;
+  text-align: center !important;
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 0;
+  background: linear-gradient(135deg, #3a0ca3, #f72585);
+  color: #fff !important;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(58, 12, 163, 0.15);
+}
+
+.stButton > button:hover {
+  transform: scale(1.03);
+  background: linear-gradient(135deg, #f72585, #3a0ca3);
 }
 
 /* ---------- Form Fields ---------- */
@@ -50,150 +90,25 @@ p, span, div, label, small {
   direction: rtl !important;
   font-family: 'Tajawal', sans-serif !important;
   font-weight: 400;
+  border-radius: 8px !important;
+  background-color: #f8f9fb !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
-/* ---------- Buttons ---------- */
-button, .stButton>button {
-  direction: rtl !important;
-  text-align: center !important;
-  font-family: 'Tajawal', sans-serif !important;
-  font-weight: 500;
-  border-radius: 10px;
-  padding: 10px 0;
-  background: linear-gradient(90deg, #ff9966, #ff5e62);
-  color: white !important;
-  border: none;
-  transition: all 0.2s ease-in-out;
-}
-
-button:hover, .stButton>button:hover {
-  background: linear-gradient(90deg, #ff5e62, #ff9966);
-  transform: scale(1.03);
-}
-
-/* ---------- Inputs on mobile ---------- */
 .stTextInput>div>div>input {
   padding-right: 12px !important;
   padding-left: 0 !important;
 }
 
-/* ---------- Centered Logo ---------- */
+/* ---------- Logo ---------- */
 .logo {
   width: 110px;
   display: block;
   margin: 20px auto 10px auto;
 }
 
-
-
-/* ---------- Root Theme Variables ---------- */
-:root {
-  --primary: #2d3a8c;
-  --primary-hover: #1e2a6b;
-  --accent: #ff6b81;
-  --bg-top: #fde3eb;
-  --bg-bottom: #fffaf3;
-  --input-bg: #f4f5f7;
-  --input-border: #e0e0e0;
-  --radius: 10px;
-  --shadow: 0 4px 20px rgba(0,0,0,0.05);
-  --transition: all 0.3s ease;
-  --text-color: #333;
-  --font: 'Poppins', 'Segoe UI', sans-serif;
-}
-
-/* ---------- Layout Background ---------- */
-/* ---------- Layout Background ---------- */
-[data-testid="stAppViewContainer"] {
-  background: linear-gradient(
-    to bottom,
-    #e8f8ff 0%,   /* soft sky blue */
-    #fff5dc 60%,  /* warm cream */
-    #ffd59e 100%  /* orange-peach gradient end */
-  );
-  font-family: var(--font);
-  color: var(--text-color);
-  padding-bottom: 80px;
-}
-
-
-[data-testid="stHeader"] {
-  background: transparent !important;
-}
-
-[data-testid="stSidebar"] {
-  background: rgba(255,255,255,0.7) !important;
-  backdrop-filter: blur(10px);
-}
-
-/* ---------- Title and Headings ---------- */
-h1, h2, h3 {
-  font-weight: 700;
-  color: var(--primary);
-}
-
-h1::before {
-  content: '📝 ';
-}
-
-/* ---------- Streamlit Form Elements ---------- */
-input, textarea, select {
-  border-radius: var(--radius) !important;
-  background: var(--input-bg) !important;
-  border: 1px solid var(--input-border) !important;
-  padding: 10px 12px !important;
-  transition: var(--transition);
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none !important;
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(45,58,140,0.15) !important;
-}
-
-/* ---------- Buttons ---------- */
-button, [data-testid="stButton"] button {
-  background: var(--primary) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  border-radius: var(--radius) !important;
-  border: none !important;
-  padding: 10px 20px !important;
-  box-shadow: var(--shadow) !important;
-  transition: var(--transition);
-}
-
-button:hover, [data-testid="stButton"] button:hover {
-  background: var(--primary-hover) !important;
-  transform: translateY(-1px);
-}
-
-/* ---------- Cards / Containers ---------- */
-section.main {
-  position: relative !important;
-  z-index: 1 !important;
-  margin: auto;
-  max-width: 600px;
-  background: rgba(255,255,255,0.85);
-  padding: 30px 40px;
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(5px);
-}
-
-/* ---------- Success & Error Messages ---------- */
-.stAlert {
-  border-radius: var(--radius) !important;
-  padding: 12px 18px !important;
-  box-shadow: var(--shadow);
-}
-
 /* ---------- Responsive Design ---------- */
 @media (max-width: 768px) {
-  section.main {
-    padding: 20px;
-    border-radius: 14px;
-  }
   h1 {
     font-size: 1.6rem !important;
     text-align: center;
@@ -206,55 +121,12 @@ section.main {
   }
 }
 
-/* ---------- Floating Logo (Optional) ---------- */
-.logo {
-  display: block;
-  margin: 0 auto 20px auto;
-  width: 120px;
-  animation: fadeIn 1s ease forwards;
-}
-
+/* ---------- Animation ---------- */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---------- Animated Background Wave ---------- */
-body::before {
-  content: '';
-  position: fixed;
-  top: -100px;
-  left: 0;
-  width: 100%;
-  height: 400px;
-  background: radial-gradient(circle at 50% 0%, rgba(255,192,203,0.4), transparent);
-  border-radius: 50%;
-  z-index: 0;
-  animation: floatWave 6s ease-in-out infinite alternate;
-}
-
-@keyframes floatWave {
-  from { transform: translateY(0); }
-  to { transform: translateY(15px); }
-}
-
-
-/* ---------- Responsive Form Box ---------- */
-.form-box {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 18px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  padding: 40px 30px;
-  margin: 40px auto;
-  max-width: 480px;
-  direction: rtl;
-  text-align: right;
-  backdrop-filter: blur(6px);
-}
-
-@media (max-width: 600px) {
-  .form-box {
-    padding: 25px 20px;
-    margin: 20px 10px;
-  }
+.form-container {
+  animation: fadeIn 0.8s ease both;
 }

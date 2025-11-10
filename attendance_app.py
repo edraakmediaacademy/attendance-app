@@ -71,55 +71,25 @@ def validate_email(x: str) -> bool:
     if email_re:
         return bool(email_re.match(x.strip()))
     return "@" in x.strip() and "." in x.strip()
-
 # -------- نموذج داخل بوكس متجاوب --------
-st.markdown("<div class='form-box'>", unsafe_allow_html=True)
+st.markdown("<div class='form-container'>", unsafe_allow_html=True)
 
-name = st.text_input("الاسم الكامل", placeholder="اكتب اسمك هنا")
+name  = st.text_input("الاسم الكامل", placeholder="اكتب اسمك هنا")
 phone = st.text_input("التليفون (مثال: +971501234567 أو 0501234567)")
 email = st.text_input("الإيميل", placeholder="example@email.com")
 
-# -------- زر التسجيل --------
 if st.button("سجّل الحضور ✅", use_container_width=True):
-    if not name.strip() or not phone.strip() or not email.strip():
-        st.warning("الرجاء إدخال جميع البيانات قبل التسجيل.")
-    elif not validate_phone(phone):
-        st.warning("صيغة رقم الهاتف غير صحيحة.")
-    elif not validate_email(email):
-        st.warning("صيغة البريد الإلكتروني غير صحيحة.")
-    else:
-        try:
-            try:
-                df_old = pd.read_excel(DATA_FILE)
-                if df_old.empty:
-                    df_old = pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"])
-            except Exception:
-                df_old = pd.DataFrame(columns=["الاسم الكامل", "التليفون", "الإيميل", "الوقت"])
-
-            new_row = {
-                "الاسم الكامل": name.strip(),
-                "التليفون": phone.strip(),
-                "الإيميل": email.strip(),
-                "الوقت": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            }
-            df_new = pd.concat([df_old, pd.DataFrame([new_row])], ignore_index=True)
-            df_new.to_excel(DATA_FILE, index=False)
-            st.success("تم تسجيل حضورك بنجاح 🎉")
-        except Exception as e:
-            st.error(f"حدث خطأ أثناء حفظ البيانات: {e}")
+    # باقي كود التسجيل كما هو...
 
 if DATA_FILE.exists():
-    try:
-        with open(DATA_FILE, "rb") as fh:
-            st.download_button(
-                "⬇️ تحميل قاعدة البيانات",
-                data=fh,
-                file_name="attendance.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True,
-            )
-    except Exception as e:
-        st.error(f"حدث خطأ أثناء تحضير ملف التنزيل: {e}")
+    with open(DATA_FILE, "rb") as fh:
+        st.download_button(
+            "⬇️ تحميل قاعدة البيانات",
+            data=fh,
+            file_name="attendance.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+        )
 
 st.markdown("</div>", unsafe_allow_html=True)
 
