@@ -46,8 +46,7 @@ html, body, [data-testid="stAppViewContainer"] {
   left: 0;
   width: 100%;
   height: 180px; /* Adjust height as needed */
-  /* Using a placeholder. Replace with your actual wave SVG or remove if not using. */
-  background: url('https://raw.githubusercontent.com/streamlit/docs/main/docs/images/wave-example.svg') no-repeat center bottom;
+  background: url('https://raw.githubusercontent.com/streamlit/docs/main/docs/images/wave-example.svg') no-repeat center bottom; /* Placeholder, replace if needed */
   background-size: cover;
   z-index: 0; /* Ensure it's behind content */
 }
@@ -71,14 +70,11 @@ html, body, [data-testid="stAppViewContainer"] {
     display: block; /* Ensure SVG is block within its wrapper for centering */
 }
 
-/* This is the CRUCIAL part for the white box! */
-/* Target the specific stVerticalBlock that contains your main form content */
-/* We need to be careful with nth-child, as it depends on other st.markdown elements */
-/* Let's target the *second* stVerticalBlock (first one usually contains title/wave setup) */
-/* Or, more robustly, find the one directly after the logo-wrapper */
-
-/* The main content area where title, inputs, etc., are */
-.main > div:nth-child(2) > div:first-child[data-testid="stVerticalBlock"] {
+/* --- CRUCIAL FOR WHITE BOX --- */
+/* Target the main Streamlit container that holds the content after the wave and logo */
+/* This will target the first stVerticalBlock after the initial page-level markdown elements */
+/* The main content that *should* be in the white box */
+.main > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)[data-testid="stVerticalBlock"] {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -91,21 +87,7 @@ html, body, [data-testid="stAppViewContainer"] {
     animation: fadeIn 0.8s ease both; /* Keep animation */
     position: relative;
     z-index: 1; /* Ensure it's above the wave */
-}
-
-/* Adjust padding for the content *inside* this container if needed */
-.main > div:nth-child(2) > div:first-child[data-testid="stVerticalBlock"] > div {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-
-/* Adjust for the wave-bg by pushing the first main content block down */
-/* The logo and the white box should sit below the wave */
-.main > div:first-child { /* This targets the outer most vertical block that contains logo and the form container */
-    margin-top: 160px; /* Adjust this value based on your wave-bg height */
-    position: relative;
-    z-index: 1; /* Ensure it's above wave */
+    margin-top: 160px !important; /* Push down to clear the wave and logo area */
 }
 
 
@@ -168,12 +150,13 @@ p, span, div, label, small {
   padding-left: 0 !important;
 }
 
-/* Adjust for Streamlit's default margins within its containers */
-/* Target specific nested divs to remove unwanted padding/margins */
-[data-testid="stVerticalBlock"] > div > div > div { /* Apply to all nested blocks for consistency */
+/* Adjust for Streamlit's default margins/padding within its containers */
+/* This is a more general reset for internal blocks */
+[data-testid="stVerticalBlock"] > div > div > div {
     padding: 0px !important;
     margin: 0px !important;
 }
+
 
 /* Small adjustment for the markdown horizontal rule */
 hr {
@@ -184,7 +167,7 @@ hr {
 
 
 /* ---------- Responsive Design ---------- */
-@media (max-width: 600px) { /* Changed from 768px for better mobile focus */
+@media (max-width: 600px) {
   h1 {
     font-size: 1.6rem !important;
     text-align: center;
@@ -196,7 +179,7 @@ hr {
     width: 100% !important;
   }
   /* Adjust form container for smaller screens */
-  .main > div:nth-child(2) > div:first-child[data-testid="stVerticalBlock"] {
+  .main > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)[data-testid="stVerticalBlock"] {
     padding: 25px 20px;
     margin: 20px 10px;
   }
