@@ -11,27 +11,42 @@ import streamlit.components.v1 as components
 st.set_page_config(page_title="نظام تسجيل الحضور", page_icon="📝", layout="centered")
 
 # -----------------------------------------------------
-# تحميل CSS (تصميم الواجهة)
+# تحميل CSS (تصميم الواجهة) + إصلاح الوميض
 # -----------------------------------------------------
 def load_css():
+    # تحميل ملفات CSS الخارجية (إذا كانت موجودة)
     for path in ["static/style.css", "style.css"]:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-                return
+                # لا نستخدم return هنا لنسمح بالكود التالي بالعمل
         except FileNotFoundError:
             continue
+    
+    # CSS Fix for flickering/opacity changes during reruns
+    # هذا الكود يثبت الأوباسيتي ويزيل الانتقالات المسببة للوميض
+    stability_css = """
+    <style>
+    .stApp {
+        opacity: 1 !important; 
+        transition: none !important;
+    }
+    .stTextInput, .stSelectbox {
+        transition: none;
+    }
+    </style>
+    """
+    st.markdown(stability_css, unsafe_allow_html=True)
 
 load_css()
 
 # -----------------------------------------------------
 # رابط Google Apps Script
-#   - يجب أن يكون السكربت يحتوي doPost (للحفظ) و doGet (لإرجاع العدّاد)
 # -----------------------------------------------------
 GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw8cBRPqxDeBT2PMxdijsMApk1kqBvfHW_XzPzTfDGsn9TTiIut4xxwXgpkKPV0dr3d0Q/exec"
 
 # -----------------------------------------------------
-# قائمة أكواد الدول (تم نقلها للأعلى لتكون متاحة للـ callback)
+# قائمة أكواد الدول
 # -----------------------------------------------------
 country_codes = {
     "🇦🇪 الإمارات": "+971",
@@ -55,11 +70,11 @@ defaults = {
     "phone_number": "",
     "masterclass": "كتابة المحتوى للسوشيال ميديا - أشرف سالم",
     "session": "اليوم الأول",
-    "submission_status": None, # حالة جديدة لعرض الرسائل
+    "submission_status": None,
 }
 
 # -----------------------------------------------------
-# دالة لجلب عدد المسجلين مرة واحدة كبداية (لا تسبب وميض)
+# دالة لجلب عدد المسجلين
 # -----------------------------------------------------
 def get_registered_count_initial():
     try:
@@ -87,7 +102,7 @@ def send_to_google_sheet(record: dict) -> bool:
 def submit_and_reset_form():
     """
     تُرسل البيانات ثم تُعيد تعيين قيم session_state.
-    تُستدعى عبر on_click لتجنب StreamlitAPIException.
+    تُستدعى عبر on_click لتحديث الحالة بأمان.
     """
     # جلب القيم من session_state مباشرة
     name = st.session_state["name"].strip()
@@ -148,7 +163,7 @@ st.markdown(
 st.header("📋 تسجيل حضور الماستر كلاس")
 
 # -----------------------------------------------------
-# عدّاد المسجلين (بدون ريفريش الصفحة)
+# عدّاد المسجلين (JS)
 # -----------------------------------------------------
 initial_count = get_registered_count_initial()
 initial_count_text = str(initial_count) if initial_count is not None else "—"
@@ -171,10 +186,9 @@ counter_html = f"""
         if (el) el.textContent = n.toString();
       }}
     }} catch (e) {{
-      // تجاهل الأخطاء الشبكية بصمت (بدون كسر الواجهة)
+      // تجاهل الأخطاء الشبكية بصمت
     }}
   }}
-  // تحديث مبدئي + تحديث كل 30 ثانية
   updateCount();
   setInterval(updateCount, 30000);
 </script>
@@ -182,10 +196,11 @@ counter_html = f"""
 components.html(counter_html, height=60)
 
 # -----------------------------------------------------
-# واجهة الإدخال (الفورم الأساسي)
+# واجهة الإدخال (مع debounce=500)
 # -----------------------------------------------------
-st.text_input("الاسم الكامل", key="name")
-st.text_input("البريد الإلكتروني", key="email")
+# إضافة debounce=500 لتقليل مرات إعادة الرسم أثناء الكتابة
+st.text_input("الاسم الكامل", key="name", debounce=500)
+st.text_input("البريد الإلكتروني", key="email", debounce=500)
 
 col_code, col_phone = st.columns([1, 2])
 with col_code:
@@ -193,8 +208,7 @@ with col_code:
         "كود الدولة", list(country_codes.keys()), index=0, key="selected_country"
     )
 with col_phone:
-    # هذا هو السطر الذي تم إصلاحه لضمان إغلاق السلسلة النصية والقوس بشكل صحيح
-    st.text_input("رقم الموبايل", placeholder="5xxxxxxxx", key="phone_number")
+    st.text_input("رقم الموبايل", placeholder="5xxxxxxxx", key="phone_number", debounce=500)
 
 st.selectbox(
     "اختر الماستر كلاس",
@@ -216,7 +230,6 @@ st.selectbox(
 # -----------------------------------------------------
 # زر التسجيل (باستخدام on_click)
 # -----------------------------------------------------
-# يتم استدعاء submit_and_reset_form مباشرة عند النقر لتحديث session_state بأمان
 st.button(
     "تسجيل الحضور", 
     use_container_width=True, 
@@ -230,7 +243,6 @@ status = st.session_state["submission_status"]
 
 if status == "success":
     st.success("✅ تم تسجيل حضورك بنجاح!")
-    # إعادة تعيين الحالة لمنع ظهور الرسالة في دورات لاحقة
     st.session_state["submission_status"] = None 
 elif status == "error":
     st.error("⚠️ حدث خطأ أثناء الإرسال إلى Google Sheet. تأكد أن السكربت منشور كـ Web App ومتاح (Anyone).")
