@@ -121,6 +121,21 @@ country_codes = {
 }
 
 # -----------------------------------------------------
+# دالة لإعادة تعيين حقول الإدخال
+# -----------------------------------------------------
+def reset_form_fields():
+    """تعيد تعيين قيم session_state للحقول المراد إفراغها."""
+    # إفراغ حقول الإدخال النصية
+    st.session_state["name"] = ""
+    st.session_state["email"] = ""
+    st.session_state["phone_number"] = ""
+    # إعادة تعيين SelectBox إلى قيمها الافتراضية
+    st.session_state["selected_country"] = defaults["selected_country"]
+    st.session_state["masterclass"] = defaults["masterclass"]
+    st.session_state["session"] = defaults["session"]
+
+
+# -----------------------------------------------------
 # واجهة الإدخال (الفورم الأساسي) — لا تصفير بعد الإرسال
 # -----------------------------------------------------
 name = st.text_input("الاسم الكامل", key="name")
@@ -179,6 +194,8 @@ if st.button("تسجيل الحضور", use_container_width=True):
         }
         if send_to_google_sheet(payload):
             st.success("✅ تم تسجيل حضورك بنجاح!")
+            # استدعاء دالة إعادة التعيين لإفراغ الحقول
+            reset_form_fields() 
         else:
             st.error("⚠️ حدث خطأ أثناء الإرسال إلى Google Sheet. تأكد أن السكربت منشور كـ Web App ومتاح (Anyone).")
 
