@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Global Theme for Streamlit Attendance App
-   (FIXED VERSION: Targets Streamlit's native containers)
+   Attendance App Theme (Based on Login Screen Design)
+   Author: ChatGPT-4 (adapted for user)
    ========================================================================== */
 /* ---------- Google Font: Tajawal ---------- */
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
@@ -11,96 +11,67 @@ html, body, [data-testid="stAppViewContainer"] {
   text-align: right;
   font-family: 'Tajawal', sans-serif !important;
   letter-spacing: 0.2px;
-  /* Main background for the entire app */
-  background: linear-gradient(
-    to bottom,
-    #e8f8ff 0%,   /* soft sky blue */
-    #fff5dc 60%,  /* warm cream */
-    #ffd59e 100%  /* orange-peach gradient end */
-  ) !important; /* !important to override Streamlit defaults */
+  /* Main background from Login Screen */
+  background: linear-gradient(135deg, #7209b7 0%, #f72585 100%) !important;
   padding-bottom: 80px; /* Space at the bottom */
+  min-height: 100vh; /* Ensure it fills the screen */
 }
 
-/* Ensure Streamlit's main app view takes full width and positions content */
-[data-testid="stAppViewContainer"] {
-    position: relative; /* For absolute positioning of wave-bg */
-    overflow-x: hidden; /* Prevent horizontal scroll from wave */
+/* Hide Streamlit header, toolbar, AND menu buttons */
+[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDeployButton"], [data-testid="stAppFrameMenu"], #MainMenu, footer {
+    display: none !important;
 }
 
 /* Adjust Streamlit's main content area background and padding */
 .main {
-    background: transparent !important; /* Ensure Streamlit's main area doesn't have its own background */
-    padding-top: 0 !important; /* We will manage padding with specific elements */
-    padding-left: 1rem; /* Adjust default padding */
-    padding-right: 1rem; /* Adjust default padding */
+    background: transparent !important;
+    padding-top: 0 !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    /* Center the content vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Hide Streamlit header, toolbar, AND menu buttons */
-[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDeployButton"], [data-testid="stAppFrameMenu"] {
-    display: none !important;
-}
-
-/* ---------- Wave Background ---------- */
-.wave-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 180px; /* Adjust height as needed */
-  background: url('https://raw.githubusercontent.com/streamlit/docs/main/docs/images/wave-example.svg') no-repeat center bottom; /* Placeholder, replace if needed */
-  background-size: cover;
-  z-index: 0; /* Ensure it's behind content */
-}
-
-/* ---------- Logo Styling ---------- */
-.logo-wrapper {
-    text-align: center;
-    margin-bottom: 10px;
-    width: 100px; /* Adjust as needed */
-    height: auto;
-    display: block; /* Make it a block element to center */
-    margin-left: auto;
-    margin-right: auto;
-    position: relative; /* For z-index to work against wave */
-    z-index: 2; /* Ensure logo is above everything */
-    padding-top: 20px; /* Add some space above the logo itself */
-}
-.logo-wrapper svg {
-    max-width: 100%;
-    height: auto;
-    display: block; /* Ensure SVG is block within its wrapper for centering */
-}
-
-/* --- (THE FIX) TARGET THE *FIRST* STREAMLIT BLOCK AS THE FORM BOX --- */
-/* This targets the first stVerticalBlock that is a direct child of .main */
-.main > [data-testid="stVerticalBlock"]:first-of-type {
-  background: rgba(255, 255, 255, 0.96);
+/* --- (THE FIX) TARGET *ALL* STREAMLIT BLOCKS AS CARDS --- */
+/* This will style both the FORM and the DATA PREVIEW as white cards */
+.main > [data-testid="stVerticalBlock"] {
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  padding: 45px 35px;
-  /* This margin pushes it down from the logo (160px) and centers it (auto) */
-  margin: 160px auto 60px auto; 
-  max-width: 560px;
-  backdrop-filter: blur(6px);
-  direction: rtl;
-  text-align: right;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 40px 30px;
+  margin: 20px auto; /* Add spacing between them */
+  max-width: 600px; /* A good width for both form and table */
+  width: 90%; /* Responsive */
   animation: fadeIn 0.8s ease both;
   position: relative;
-  z-index: 2; /* Above wave */
+  z-index: 10;
 }
 
-/* Typography inside the first block */
-.main > [data-testid="stVerticalBlock"]:first-of-type h1,
-.main > [data-testid="stVerticalBlock"]:first-of-type h2,
-.main > [data-testid="stVerticalBlock"]:first-of-type h3,
-.main > [data-testid="stVerticalBlock"]:first-of-type label,
-.main > [data-testid="stVerticalBlock"]:first-of-type p {
-  text-align: right !important;
-  direction: rtl !important;
+/* Ensure first card has more space at the top */
+.main > [data-testid="stVerticalBlock"]:first-of-type {
+    margin-top: 60px; 
 }
 
 
-/* ---------- Typography (Global) ---------- */
+/* ---------- Logo Styling (Now inside the card) ---------- */
+.form-logo-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-logo-wrapper svg {
+    width: 80px; /* Smaller, like a login logo */
+    height: 80px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ---------- Typography ---------- */
 h1, h2 {
   font-family: 'Tajawal', sans-serif !important;
   font-weight: 700 !important;
@@ -123,55 +94,82 @@ p, span, div, label, small {
   line-height: 1.6;
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons (From Login Design) ---------- */
 .stButton > button {
   direction: rtl !important;
   text-align: center !important;
   font-family: 'Tajawal', sans-serif !important;
   font-weight: 600;
   border-radius: 10px;
-  padding: 10px 0;
-  background: linear-gradient(135deg, #3a0ca3, #f72585);
+  padding: 12px 0; /* Larger padding */
+  background: linear-gradient(135deg, #7209b7, #f72585); /* Matching app gradient */
   color: #fff !important;
   border: none;
   transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 12px rgba(58, 12, 163, 0.15);
-  width: 100%; /* Make buttons full width by default */
+  box-shadow: 0 6px 20px rgba(114, 9, 183, 0.25); /* Stronger shadow */
+  width: 100%;
+  margin-top: 10px; /* Space above button */
+  font-size: 1.05em; /* Larger font size */
 }
 
 .stButton > button:hover {
-  transform: scale(1.03);
-  background: linear-gradient(135deg, #f72585, #3a0ca3);
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 8px 25px rgba(114, 9, 183, 0.35);
 }
 
-/* ---------- Form Fields (Input, Textarea, Select) ---------- */
-.stTextInput label, .stTextInput input, .stTextInput textarea {
-  text-align: right !important;
-  direction: rtl !important;
-  font-family: 'Tajawal', sans-serif !important;
-  font-weight: 400;
-  border-radius: 8px !important;
-  background-color: #f8f9fb !important;
-  border: 1px solid #e0e0e0 !important;
+/* Style the "Clear" button differently */
+.stButton:last-of-type > button {
+    background: linear-gradient(135deg, #888, #555); /* Grey gradient */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
-
-.stTextInput>div>div>input {
-  padding-right: 12px !important; /* Adjust padding for RTL */
-  padding-left: 0 !important;
-}
-
-/* Global reset for padding/margin on Streamlit's internal blocks */
-[data-testid="stVerticalBlock"] > div > div > div {
-    padding: 0px !important;
-    margin: 0px !important;
+.stButton:last-of-type > button:hover {
+    background: linear-gradient(135deg, #555, #888);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 
-/* Small adjustment for the markdown horizontal rule */
-hr {
-    margin-top: 3rem;
-    margin-bottom: 1rem;
-    border-top: 1px solid rgba(0,0,0,0.1);
+/* ---------- Form Fields (Input, Select) ---------- */
+.stTextInput label, .stSelectbox label {
+    font-weight: 500 !important;
+    color: #444 !important;
+    margin-bottom: 8px; /* Space below label */
+}
+
+.stTextInput input, .stSelectbox > div > div {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: 'Tajawal', sans-serif !important;
+    font-weight: 400;
+    border-radius: 10px !important; /* More rounded */
+    background-color: #f8f9fb !important;
+    border: 1px solid #e0e0e0 !important;
+    padding: 10px 15px !important; /* Larger padding */
+    height: auto !important; /* Ensure height adjusts */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+    transition: all 0.2s ease;
+}
+
+.stTextInput input:focus, .stSelectbox > div > div:focus-within {
+    border-color: #7209b7 !important; /* Highlight on focus */
+    box-shadow: 0 0 0 3px rgba(114, 9, 183, 0.2) !important;
+}
+
+/* Adjust selectbox arrow */
+.stSelectbox svg {
+    left: 15px; /* Move arrow to the left */
+    right: auto;
+}
+
+
+/* ---------- Dataframe Styling ---------- */
+[data-testid="stDataFrame"] {
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-radius: 10px;
+}
+[data-testid="stDataFrame"] .col-header {
+    background-color: #f8f9fb;
+    font-weight: 600;
 }
 
 
@@ -181,20 +179,19 @@ hr {
     font-size: 1.6rem !important;
     text-align: center;
   }
-  input, textarea, select {
-    font-size: 0.95rem !important;
-  }
   
-  /* Make the form box (the first block) responsive */
-  .main > [data-testid="stVerticalBlock"]:first-of-type {
+  .main > [data-testid="stVerticalBlock"] {
     padding: 25px 20px;
-    /* Adjust margin: 120px top (less for mobile), 10px sides, 20px bottom */
-    margin: 120px 10px 20px 10px; 
+    margin: 20px 10px; /* Adjust margin for mobile */
+  }
+
+  .main > [data-testid="stVerticalBlock"]:first-of-type {
+    margin-top: 40px; 
   }
 }
 
 /* ---------- Animation ---------- */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }

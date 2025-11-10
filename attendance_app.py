@@ -20,13 +20,8 @@ def load_css():
 
 load_css()
 
-# --------------------------- Header visuals ------------------------
-st.markdown('<div class="wave-bg"></div>', unsafe_allow_html=True)
-# Replace with your logo if desired
-st.markdown(
-    '<div class="logo-wrapper"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f0f0f0"/><text x="50%" y="53%" text-anchor="middle" font-size="140" font-family="sans-serif">📝</text></svg></div>',
-    unsafe_allow_html=True
-)
+# --------------------------- Header visuals (REMOVED WAVE) ------------------------
+# ❌ تم حذف st.markdown('<div class="wave-bg"></div>', ...)
 
 # --------------------------- Data setup ----------------------------
 DATA_FILE = Path("attendance_data.csv")
@@ -57,14 +52,12 @@ def append_record(record: dict):
     df = load_data()
     df = pd.concat([df, pd.DataFrame([record])], ignore_index=True)
     df.to_csv(DATA_FILE, index=False)
-    # also clear cache to reflect immediately
     load_data.clear()
 
 @st.cache_data(show_spinner=False)
 def get_today_data(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
-    # parse timestamp to date
     try:
         d = pd.to_datetime(df["timestamp"])
         today = pd.Timestamp.now().date()
@@ -73,7 +66,12 @@ def get_today_data(df: pd.DataFrame) -> pd.DataFrame:
         return df.tail(50)
 
 # --------------------------- Form UI -------------------------------
-# ❌❌ (تم حذف) st.markdown('<div class="form-box">', ...) ❌❌
+
+# ✅✅ (تم نقل الشعار إلى هنا) ✅✅
+st.markdown(
+    '<div class="form-logo-wrapper"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f0f0f0"/><text x="50%" y="53%" text-anchor="middle" font-size="140" font-family="sans-serif">📝</text></svg></div>',
+    unsafe_allow_html=True
+)
 
 st.header("📋 تسجيل حضور الماستر كلاس")
 
@@ -110,7 +108,6 @@ if submit:
         except Exception as e:
             st.error(f"حدث خطأ أثناء حفظ البيانات: {e}")
 
-# ❌❌ (تم حذف) st.markdown("</div>", ...) ❌❌
 
 # --------------------------- Data Preview & Export -----------------
 st.markdown("### 🗂️ سجلات اليوم (آخر المدخلات)")
@@ -125,7 +122,6 @@ else:
 col1, col2 = st.columns(2)
 
 with col1:
-    # CSV download
     csv_bytes = df_all.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="⬇️ تنزيل CSV كامل",
@@ -136,7 +132,6 @@ with col1:
     )
 
 with col2:
-    # Excel download
     try:
         import io
         from pandas import ExcelWriter
