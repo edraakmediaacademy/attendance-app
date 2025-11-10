@@ -3,12 +3,12 @@ import requests
 from datetime import datetime
 
 # -----------------------------------------------------
-# إعداد الصفحة
+# إعداد الصفحة العامة
 # -----------------------------------------------------
 st.set_page_config(page_title="نظام تسجيل الحضور", page_icon="📝", layout="centered")
 
 # -----------------------------------------------------
-# تحميل CSS
+# تحميل CSS (تصميم الواجهة)
 # -----------------------------------------------------
 def load_css():
     for path in ["static/style.css", "style.css"]:
@@ -18,12 +18,13 @@ def load_css():
                 return
         except FileNotFoundError:
             continue
+
 load_css()
 
 # -----------------------------------------------------
-# رابط Google Apps Script
+# رابط Google Apps Script (احفظ هذا كما هو)
 # -----------------------------------------------------
-GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz3hXsAawAMpu4LPj26-xntDvGWutZdjwl4dS-o570jKedIGRvyEizljrO5TvOMUCSt0Q/exec"
+GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw8cBRPqxDeBT2PMxdijsMApk1kqBvfHW_XzPzTfDGsn9TTiIut4xxwXgpkKPV0dr3d0Q/exec"
 
 # -----------------------------------------------------
 # دالة لجلب عدد المسجلين
@@ -38,18 +39,21 @@ def get_registered_count():
         return None
 
 # -----------------------------------------------------
-# تحديث العدّاد كل 30 ثانية
+# تفعيل التحديث التلقائي للعداد كل 30 ثانية
 # -----------------------------------------------------
 st.autorefresh(interval=30000, key="auto_refresh_count")
 
 # -----------------------------------------------------
-# الشعار + العنوان
+# شعار وواجهة العنوان
 # -----------------------------------------------------
 st.markdown(
-    '<div class="form-logo-wrapper"><svg viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#f0f0f0"/><text x="50%" y="53%" text-anchor="middle" font-size="140">📝</text></svg></div>',
-    unsafe_allow_html=True,
+    '<div class="form-logo-wrapper"><svg viewBox="0 0 512 512">'
+    '<circle cx="256" cy="256" r="200" fill="#f0f0f0"/>'
+    '<text x="50%" y="53%" text-anchor="middle" font-size="140" font-family="sans-serif">📝</text>'
+    '</svg></div>',
+    unsafe_allow_html=True
 )
-st.header("📋 تسجيل حضور الماستر كلاس")
+st.header("تسجيل حضور الماستر كلاس")
 
 # -----------------------------------------------------
 # عرض العدّاد
@@ -57,46 +61,21 @@ st.header("📋 تسجيل حضور الماستر كلاس")
 count = get_registered_count()
 if count is not None:
     st.markdown(
-        f"<div style='text-align:center; font-size:18px; margin-bottom:15px;'>👥 عدد المسجلين حتى الآن: <b>{count}</b></div>",
-        unsafe_allow_html=True,
+        f"<div style='text-align:center; font-size:18px; margin-bottom:15px;'>"
+        f"👥 عدد المسجلين حتى الآن: <b>{count}</b></div>",
+        unsafe_allow_html=True
     )
 else:
     st.markdown(
         "<div style='text-align:center; color:#999;'>جارٍ تحميل عدد المسجلين...</div>",
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
 # -----------------------------------------------------
-# session_state الثابت
+# session_state الثابت (لحفظ البيانات أثناء التفاعل)
 # -----------------------------------------------------
 defaults = {
     "name": "",
     "email": "",
     "selected_country": "🇦🇪 الإمارات",
-    "phone_number": "",
-    "masterclass": "كتابة المحتوى للسوشيال ميديا - أشرف سالم",
-    "session": "اليوم الأول",
-}
-for k, v in defaults.items():
-    st.session_state.setdefault(k, v)
-
-# -----------------------------------------------------
-# قائمة أكواد الدول
-# -----------------------------------------------------
-country_codes = {
-    "🇦🇪 الإمارات": "+971",
-    "🇸🇦 السعودية": "+966",
-    "🇪🇬 مصر": "+20",
-    "🇶🇦 قطر": "+974",
-    "🇰🇼 الكويت": "+965",
-    "🇧🇭 البحرين": "+973",
-    "🇴🇲 عمان": "+968",
-    "🇯🇴 الأردن": "+962",
-    "🇱🇧 لبنان": "+961",
-}
-
-# -----------------------------------------------------
-# واجهة الإدخال (بدون تصفير)
-# -----------------------------------------------------
-name = st.text_input("الاسم الكامل", key="name")
-email = st.text_input("البريد الإلكتروني", key="emai_
+    "phone_num_
