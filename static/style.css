@@ -237,3 +237,24 @@ body::before {
   from { transform: translateY(0); }
   to { transform: translateY(15px); }
 }
+
+
+/* ---------- Responsive Form Box ---------- */
+.form-box {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  padding: 40px 30px;
+  margin: 40px auto;
+  max-width: 480px;
+  direction: rtl;
+  text-align: right;
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 600px) {
+  .form-box {
+    padding: 25px 20px;
+    margin: 20px 10px;
+  }
+}
