@@ -54,103 +54,17 @@ for k, v in defaults.items():
 # قائمة أكواد الدول
 # -----------------------------------------------------
 country_codes = {
-    "🇦🇪 الإمارات": "+971",
-    "🇸🇦 السعودية": "+966",
-    "🇪🇬 مصر": "+20",
-    "🇶🇦 قطر": "+974",
-    "🇰🇼 الكويت": "+965",
-    "🇧🇭 البحرين": "+973",
-    "🇴🇲 عمان": "+968",
-    "🇯🇴 الأردن": "+962",
-    "🇱🇧 لبنان": "+961"
+    "🇦🇪 الإمارات": "00971",
+    "🇸🇦 السعودية": "00966",
+    "🇪🇬 مصر": "0020",
+    "🇶🇦 قطر": "00974",
+    "🇰🇼 الكويت": "00965",
+    "🇧🇭 البحرين": "00973",
+    "🇴🇲 عمان": "00968",
+    "🇯🇴 الأردن": "00962",
+    "🇱🇧 لبنان": "00961"
 }
 
 # -----------------------------------------------------
 # عناصر الفورم
-# -----------------------------------------------------
-name = st.text_input("الاسم الكامل", key="name")
-email = st.text_input("البريد الإلكتروني", key="email")
-
-col_code, col_phone = st.columns([1, 2])
-with col_code:
-    selected_country = st.selectbox("كود الدولة", list(country_codes.keys()), index=0, key="selected_country")
-with col_phone:
-    phone_number = st.text_input("رقم الموبايل", placeholder="5xxxxxxxx", key="phone_number")
-
-masterclass = st.selectbox(
-    "اختر الماستر كلاس",
-    [
-        "كيف تتحقق من الأخبار باستخدام الذكاء الاصطناعي - فهمي متولي",
-        "كتابة المحتوى للسوشيال ميديا - أشرف سالم",
-        "كتابة وصياغة الأخبار للسوشيال ميديا - محمد عواد",
-        "تصحيح مفاهيم التسويق الرقمي - يحيى نايل",
-    ],
-    key="masterclass"
-)
-
-session = st.selectbox(
-    "اختر اليوم / الجلسة",
-    ["اليوم الأول", "اليوم الثاني", "اليوم الثالث"],
-    key="session"
-)
-
-# -----------------------------------------------------
-# دالة الإرسال إلى Google Sheet
-# -----------------------------------------------------
-def send_to_google_sheet(record: dict):
-    """يرسل البيانات إلى Google Sheet عبر API."""
-    try:
-        response = requests.post(GOOGLE_SHEET_URL, json=record)
-        return response.status_code == 200
-    except Exception:
-        return False
-
-# -----------------------------------------------------
-# زر التسجيل
-# -----------------------------------------------------
-if st.button("تسجيل الحضور", use_container_width=True):
-    if not st.session_state.name.strip() or not st.session_state.email.strip() or not st.session_state.phone_number.strip():
-        st.warning("⚠️ الرجاء إدخال الاسم والبريد الإلكتروني ورقم الموبايل.")
-    elif GOOGLE_SHEET_URL.startswith("https://script.google.com/macros/s/AKfycbxxxxxxxx"):
-        st.warning("⚠️ الرجاء استبدال رابط GOOGLE_SHEET_URL بالرابط الصحيح من Google Apps Script.")
-    else:
-        full_phone = f"{country_codes[st.session_state.selected_country]} {st.session_state.phone_number.strip()}"
-        record = {
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "name": st.session_state.name.strip(),
-            "email": st.session_state.email.strip(),
-            "phone": full_phone,
-            "masterclass": st.session_state.masterclass,
-            "session": st.session_state.session,
-        }
-
-        if send_to_google_sheet(record):
-            st.success("✅ تم تسجيل حضورك بنجاح!")
-            # نحط علامة لتصفير الحقول لاحقًا
-            st.session_state["clear_form"] = True
-            st.stop()
-        else:
-            st.error("⚠️ حدث خطأ أثناء الإرسال إلى Google Sheet.")
-
-# -----------------------------------------------------
-# تصفير الحقول بعد التسجيل الناجح (بعد ثانيتين)
-# -----------------------------------------------------
-if "clear_form" in st.session_state and st.session_state["clear_form"]:
-    time.sleep(2)  # انتظر ثانيتين بعد الرسالة
-    for key, value in defaults.items():
-        st.session_state[key] = value
-    st.session_state["clear_form"] = False
-    st.rerun()
-
-# -----------------------------------------------------
-# ملاحظة أسفل الصفحة
-# -----------------------------------------------------
-st.markdown(
-    """
-    <div style='text-align:center; margin-top:40px; color:#666; font-size:0.9rem'>
-        يتم حفظ جميع البيانات مباشرة في Google Sheet.<br>
-        تأكد من أن الرابط مفعل للوصول العام (Anyone can access).
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# ----------------------------------------------------
