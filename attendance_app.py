@@ -184,7 +184,6 @@ components.html(counter_html, height=60)
 # -----------------------------------------------------
 # واجهة الإدخال (الفورم الأساسي)
 # -----------------------------------------------------
-# **ملاحظة:** يتم تمرير مفاتيح session_state مباشرة هنا
 st.text_input("الاسم الكامل", key="name")
 st.text_input("البريد الإلكتروني", key="email")
 
@@ -194,4 +193,61 @@ with col_code:
         "كود الدولة", list(country_codes.keys()), index=0, key="selected_country"
     )
 with col_phone:
-    st.text_input("رقم الموبايل", placeholder="5xxxxxxxx", key="phone
+    # هذا هو السطر الذي تم إصلاحه لضمان إغلاق السلسلة النصية والقوس بشكل صحيح
+    st.text_input("رقم الموبايل", placeholder="5xxxxxxxx", key="phone_number")
+
+st.selectbox(
+    "اختر الماستر كلاس",
+    [
+        "كيف تتحقق من الأخبار باستخدام الذكاء الاصطناعي - فهمي متولي",
+        "كتابة المحتوى للسوشيال ميديا - أشرف سالم",
+        "كتابة وصياغة الأخبار للسوشيال ميديا - محمد عواد",
+        "تصحيح مفاهيم التسويق الرقمي - يحيى نايل",
+    ],
+    key="masterclass"
+)
+
+st.selectbox(
+    "اختر اليوم / الجلسة",
+    ["اليوم الأول", "اليوم الثاني", "اليوم الثالث"],
+    key="session"
+)
+
+# -----------------------------------------------------
+# زر التسجيل (باستخدام on_click)
+# -----------------------------------------------------
+# يتم استدعاء submit_and_reset_form مباشرة عند النقر لتحديث session_state بأمان
+st.button(
+    "تسجيل الحضور", 
+    use_container_width=True, 
+    on_click=submit_and_reset_form
+)
+
+# -----------------------------------------------------
+# عرض رسالة الحالة بعد الإرسال
+# -----------------------------------------------------
+status = st.session_state["submission_status"]
+
+if status == "success":
+    st.success("✅ تم تسجيل حضورك بنجاح!")
+    # إعادة تعيين الحالة لمنع ظهور الرسالة في دورات لاحقة
+    st.session_state["submission_status"] = None 
+elif status == "error":
+    st.error("⚠️ حدث خطأ أثناء الإرسال إلى Google Sheet. تأكد أن السكربت منشور كـ Web App ومتاح (Anyone).")
+    st.session_state["submission_status"] = None
+elif status == "incomplete":
+    st.warning("⚠️ الرجاء إدخال الاسم والبريد الإلكتروني ورقم الموبايل.")
+    st.session_state["submission_status"] = None
+
+# -----------------------------------------------------
+# ملاحظة أسفل الصفحة
+# -----------------------------------------------------
+st.markdown(
+    """
+    <div style='text-align:center; margin-top:40px; color:#666; font-size:0.9rem'>
+        يتم حفظ جميع البيانات مباشرة في Google Sheet.<br>
+        تأكد من أن رابط Google Apps Script مفعل للوصول العام (Anyone).
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
